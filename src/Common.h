@@ -51,13 +51,13 @@ size_t getFileSize(char *filename) {
 }
 
 unsigned char *fileContent;
+size_t fileContentIndex;
 
 struct BitWriter {
-	FILE *outputFile;
 	unsigned char buffer;
 	unsigned char nowlen;
-	void init(FILE *outputFile) {
-		this->outputFile = outputFile;
+	void init() {
+		//this->outputFile = outputFile;
 		nowlen = 0;
 		buffer = 0;
 	}
@@ -98,7 +98,8 @@ struct BitWriter {
 
 	void flush() {
 		buffer <<= (8 - nowlen);
-		fwrite(&buffer, sizeof(unsigned char), 1, outputFile);
+		fileContent[fileContentIndex++] = buffer;
+		//fwrite(&buffer, sizeof(unsigned char), 1, outputFile);
 		nowlen = 0;
 	}
 

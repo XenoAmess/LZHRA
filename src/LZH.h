@@ -5,8 +5,6 @@
  *      Author: sfeq
  */
 
-
-
 #ifndef LZH_H_
 #define LZH_H_
 
@@ -137,16 +135,16 @@ void inputFileRead(char *inputFileName) {
 	inputFileSize = getFileSize(inputFileName);
 	//printf("%u\n", inputFileSize);
 	FILE *inputFile = fopen(inputFileName, "rb");
-	fileContent = (unsigned char*) malloc(inputFileSize + 4);
-	nodes = (Node*) malloc((sizeof(Node)) * (inputFileSize + 4));
+	fileContent = (unsigned char*) malloc(inputFileSize * 2 + 100);
+	nodes = (Node*) malloc((sizeof(Node)) * (inputFileSize * 2 + 100));
 
 	fread(fileContent, sizeof(unsigned char), inputFileSize, inputFile);
-	for (size_t i = 0; i < inputFileSize; i++) {
-		nodes[i].alive = true;
-		nodes[i].chr = fileContent[i];
-		nodes[i].lastpos = i - 1;
-		nodes[i].nextpos = i + 1;
-	}
+//	for (size_t i = 0; i < inputFileSize; i++) {
+//		nodes[i].alive = true;
+//		nodes[i].chr = fileContent[i];
+//		nodes[i].lastpos = i - 1;
+//		nodes[i].nextpos = i + 1;
+//	}
 	fclose(inputFile);
 }
 
@@ -158,10 +156,8 @@ inline size_t costInt(size_t num) {
 		res = 8;
 	} else if (num < (1 << 16)) {
 		res = 16;
-	} else if (num <= INT_MAX ) {
-		res = 32;
 	} else {
-		res = 64;
+		res = 32;
 	}
 	return res + 2;
 }
@@ -178,7 +174,7 @@ void registerSameString(size_t posa, size_t posb, size_t backDeleteLength) {
 	veca.push_back( { posa, posb, backDeleteLength });
 }
 
-void writeSameStringHeaders(FILE *outputFile) {
+void writeSameStringHeaders() {
 	BIT_WRITER.writeInt(inputFileSize);
 	BIT_WRITER.writeInt((size_t) veca.size());
 	size_t lastposb = 0;
@@ -202,9 +198,8 @@ void writeSameStringHeaders(FILE *outputFile) {
 
 void outputFileWrite(const char *outputFileName) {
 	FILE *outputFile = fopen(outputFileName, "wb");
-	BIT_WRITER.init(outputFile);
-
-	writeSameStringHeaders(outputFile);
+	BIT_WRITER.init();
+	writeSameStringHeaders();
 
 	for (size_t posa = 0; posa < inputFileSize; posa = nodes[posa].nextpos) {
 		fwrite(&nodes[posa].chr, sizeof(unsigned char), 1, outputFile);
@@ -213,6 +208,16 @@ void outputFileWrite(const char *outputFileName) {
 }
 
 void compressOneTurn() {
+	BIT_WRITER.init();
+	fileContentIndex = 0;
+
+	for (size_t i = 0; i < inputFileSize; i++) {
+		nodes[i].alive = true;
+		nodes[i].chr = fileContent[i];
+		nodes[i].lastpos = i - 1;
+		nodes[i].nextpos = i + 1;
+	}
+
 	COMPRESSING = true;
 	veca.clear();
 	mapa.clear();
@@ -222,7 +227,6 @@ void compressOneTurn() {
 		TI *= 277;
 	}
 
-	inputFileRead (INPUT);
 	unsigned long long hasha = 0;
 
 	size_t lengthToHead = 0;
@@ -277,10 +281,19 @@ void compressOneTurn() {
 			isSame: ;
 		}
 	}
-	outputFileWrite (OUTPUT);
 
-	free (fileContent);
-	free(nodes);
+	//
+	writeSameStringHeaders();
+	for (size_t posa = 0; posa < inputFileSize; posa = nodes[posa].nextpos) {
+		fileContent[fileContentIndex++] = nodes[posa].chr;
+	}
+	fileContent[fileContentIndex] = 0;
+	inputFileSize = fileContentIndex;
+
+	//outputFileWrite (OUTPUT);
+
+	//free (fileContent);
+	//free(nodes);
 }
 
 void inputFileRead_DE(const char* inputFileName) {
@@ -348,6 +361,8 @@ void compressOneTurn_DE() {
 }
 
 void compress(const char* fileName) {
+	inputFileRead (INPUT);
+
 	INPUT_FINAL = (char *) fileName;
 
 	size_t FILE_LENGTH_FINAL = getFileSize(INPUT_FINAL);
@@ -362,33 +377,33 @@ void compress(const char* fileName) {
 	size_t ti = 0;
 	sprintf(INPUT, "%s", INPUT_FINAL);
 	sprintf(OUTPUT, "%s.lzh%u", INPUT_FINAL, ti + 1);
+
 	while (1) {
 		if (compairLength < 4) {
 			break;
 		}
-
 		compressOneTurn();
 		compairLength >>= 1;
 		ti++;
 
-		sprintf(INPUT, "%s.lzh%u", INPUT_FINAL, ti);
-		sprintf(OUTPUT, "%s.lzh%u", INPUT_FINAL, ti + 1);
+		//sprintf(INPUT, "%s.lzh%u", INPUT_FINAL, ti);
+		//sprintf(OUTPUT, "%s.lzh%u", INPUT_FINAL, ti + 1);
 	}
 
 	sprintf(OUTPUT, "%s.lzh", INPUT_FINAL);
 	FILE *outputFile = fopen(OUTPUT, "wb");
-	BIT_WRITER.init(outputFile);
+	BIT_WRITER.init();
 	BIT_WRITER.writeInt(ti);
 	BIT_WRITER.flush();
 	inputFileSize = getFileSize(INPUT);
 	//printf("%u\n", inputFileSize);
-	FILE *inputFile = fopen(INPUT, "rb");
-	fileContent = (unsigned char*) malloc(inputFileSize + 16);
+//	FILE *inputFile = fopen(INPUT, "rb");
+//	fileContent = (unsigned char*) malloc(inputFileSize + 16);
 
-	fread(fileContent, sizeof(unsigned char), inputFileSize, inputFile);
+//	fread(fileContent, sizeof(unsigned char), inputFileSize, inputFile);
 	fwrite(fileContent, sizeof(unsigned char), inputFileSize, outputFile);
 
-	fclose(inputFile);
+//	fclose(inputFile);
 	fclose(outputFile);
 	free (fileContent);
 

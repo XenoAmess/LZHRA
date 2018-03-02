@@ -56,7 +56,7 @@ void outputFileWrite(const char *outputFileName) {
 	}
 
 	FILE *outputFile = fopen(outputFileName, "wb");
-	BIT_WRITER.init(outputFile);
+	BIT_WRITER.init();
 	BIT_WRITER.writeInt(startpos0);
 	BIT_WRITER.flush();
 	for (size_t i = 0; i < inputFileSize; i++) {
