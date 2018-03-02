@@ -1,0 +1,39 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+char stra[4000];
+
+char iff[500];
+
+int main() {
+	iff['a'] = 1;
+	iff['e'] = 1;
+	iff['i'] = 1;
+	iff['o'] = 1;
+	iff['u'] = 1;
+
+	scanf("%s", stra);
+	int lena = strlen(stra);
+	vector<char> veca;
+	for (int i = 0; i < lena; i++) {
+		//cout << veca.size() << endl;
+		if (veca.size() >= 2 && veca[veca.size() - 1] != stra[i]) {
+			putchar(' ');
+			veca.clear();
+		}
+
+		if (iff[stra[i]] == 0) {
+			veca.push_back(stra[i]);
+		} else {
+			veca.clear();
+		}
+
+		putchar(stra[i]);
+
+		if (veca.size() >= 2 && veca[veca.size() - 1] != veca[0]) {
+			putchar(' ');
+			veca.clear();
+		}
+	}
+	return 0;
+}
