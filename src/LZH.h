@@ -302,8 +302,8 @@ void inputFileRead_DE(const char* inputFileName) {
 	inputFileSize = BIT_READER.readInt();
 	//printf("%u\n", inputFileSize);
 
-	reference = (size_t*) malloc(sizeof(size_t) * (inputFileSize + 16));
-	nodes = (Node*) malloc((sizeof(Node)) * (inputFileSize + 16));
+	reference = (size_t*) malloc(sizeof(size_t) * (inputFileSize + 100));
+	nodes = (Node*) malloc((sizeof(Node)) * (inputFileSize + 100));
 
 	for (size_t i = 0; i < inputFileSize; i++) {
 		reference[i] = i;
@@ -361,9 +361,10 @@ void compressOneTurn_DE() {
 }
 
 void compress(const char* fileName) {
-	inputFileRead (INPUT);
-
+	
 	INPUT_FINAL = (char *) fileName;
+	sprintf(INPUT, "%s", INPUT_FINAL);
+	inputFileRead(INPUT);
 
 	size_t FILE_LENGTH_FINAL = getFileSize(INPUT_FINAL);
 	compairLength = 1;
@@ -375,7 +376,7 @@ void compress(const char* fileName) {
 	}
 
 	size_t ti = 0;
-	sprintf(INPUT, "%s", INPUT_FINAL);
+	
 	sprintf(OUTPUT, "%s.lzh%u", INPUT_FINAL, ti + 1);
 
 	while (1) {
@@ -392,10 +393,9 @@ void compress(const char* fileName) {
 
 	sprintf(OUTPUT, "%s.lzh", INPUT_FINAL);
 	FILE *outputFile = fopen(OUTPUT, "wb");
-	BIT_WRITER.init();
-	BIT_WRITER.writeInt(ti);
-	BIT_WRITER.flush();
-	inputFileSize = getFileSize(INPUT);
+
+	fwrite(&ti, sizeof(ti), sizeof(ti), outputFile);
+
 	//printf("%u\n", inputFileSize);
 //	FILE *inputFile = fopen(INPUT, "rb");
 //	fileContent = (unsigned char*) malloc(inputFileSize + 16);
@@ -424,20 +424,29 @@ void compress_DE(char * fileName) {
 	OUTPUT_FINAL[lena - strlen(".lzh")] = 0;
 
 	FILE *inputFile = fopen(INPUT_FINAL, "rb");
-	BIT_READER.init(inputFile);
-	size_t ti = BIT_READER.readInt();
+	//BIT_READER.init(inputFile);
+	//size_t ti = BIT_READER.readInt();
+	
 	//printf("ti : %u\n", ti);
 	inputFileSize = getFileSize(INPUT_FINAL);
+	inputFileSize -= sizeof(size_t);
+	size_t ti;
+	fread(&ti, sizeof(ti), sizeof(ti), inputFile);
+	/*
 	size_t cost = costInt(ti);
 	inputFileSize -= (cost >> 3);
 	if (cost & 255) {
 		inputFileSize--;
 	}
+	*/
+
+
+
 	//printf("%u\n", inputFileSize);
 
 	sprintf(OUTPUT, "%s.lzh%u", OUTPUT_FINAL, ti);
 	FILE *outputFile = fopen(OUTPUT, "wb");
-	fileContent = (unsigned char*) malloc(inputFileSize + 4);
+	fileContent = (unsigned char*) malloc(inputFileSize + 100);
 
 	fread(fileContent, sizeof(unsigned char), inputFileSize, inputFile);
 	fwrite(fileContent, sizeof(unsigned char), inputFileSize, outputFile);
@@ -448,6 +457,8 @@ void compress_DE(char * fileName) {
 
 	compairLength = 4;
 	size_t tti = ti;
+
+	/*
 	while (ti > 0) {
 		sprintf(INPUT, "%s.lzh%u", OUTPUT_FINAL, ti);
 		if (ti != 1) {
@@ -459,13 +470,8 @@ void compress_DE(char * fileName) {
 		compairLength <<= 1;
 		ti--;
 	}
-#ifdef XENOAMESS_RELEASE
-	while (tti) {
-		sprintf(INPUT, "%s.lzh%u", OUTPUT_FINAL, tti);
-		tti--;
-		remove(INPUT);
-	}
-#endif
+	*/
+
 	free (OUTPUT_FINAL);
 }
 

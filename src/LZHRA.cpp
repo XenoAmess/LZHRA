@@ -1,6 +1,11 @@
+
 #include"Common.h"
 
 int main(int argc, char* argv[]) {
+	LZH::compress("D:/workspace/LZHRA/1.txt");
+	//LZH::compress_DE((char*)"D:/workspace/LZHRA/2.txt.lzh");
+
+	/*
 	if (argc > 1) {
 		if (strcmp(argv[1], "a") == 0) {
 			LZH::compress(argv[2]);
@@ -14,6 +19,8 @@ int main(int argc, char* argv[]) {
 		puts("a FILENAME -> compress");
 		puts("e FILENAME -> extract");
 	}
+	*/
+
 	//compressOneTurn();
 	//compressionOneTurn_DE();
 	return 0;

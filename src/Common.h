@@ -7,7 +7,11 @@
 
 #ifndef COMMON_H_
 #define COMMON_H_
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 
+#include<io.h>
 #include<cstdio>
 #include<cstdlib>
 #include<cstring>
@@ -44,8 +48,7 @@ char* OUTPUT_FINAL;
 size_t inputFileSize;
 size_t getFileSize(char *filename) {
 	FILE *fp = fopen(filename, "rb");
-	fseek(fp, 0, SEEK_END);
-	size_t res = ftell(fp);
+	size_t res = _filelength(_fileno(fp));
 	fclose(fp);
 	return res;
 }
@@ -54,6 +57,7 @@ unsigned char *fileContent;
 size_t fileContentIndex;
 
 struct BitWriter {
+	
 	unsigned char buffer;
 	unsigned char nowlen;
 	void init() {
