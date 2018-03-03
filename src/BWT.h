@@ -1,8 +1,9 @@
 /*
- * BWT.h
- *
- *  Created on: 20170919
- *      Author: sfeq
+ * based on Burrows_Wheeler_transform
+ * seems no use.after using this,LZH can even product larger file.
+ * untested.might have bugs in it.
+ * @deprecated
+ *  
  */
 
 #ifndef BWT_H_

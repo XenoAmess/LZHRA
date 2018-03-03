@@ -30,6 +30,9 @@
     <ClInclude Include="..\src\Map.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\RE.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\LZHRA.cpp">

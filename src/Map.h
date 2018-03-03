@@ -1,8 +1,6 @@
 /*
- * Map.h
- *
- *  Created on: 2017年9月18日
- *      Author: sfeq
+ * Trie,makes to replace std::map,but actually use much too memory (although runs a little faster)
+ * 
  */
 
 #ifndef MAP_H_

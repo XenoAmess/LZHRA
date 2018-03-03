@@ -22,19 +22,9 @@
 #include<algorithm>
 #include<string>
 #include"List.h"
-//#include"Map.h"
+ //#include"Map.h"
 
-//#include <sys/stat.h>
-//size_t getFileSize(const char *path) {
-//	size_t filesize = -1;
-//	struct stat statbuff;
-//	if (stat(path, &statbuff) < 0) {
-//		return filesize;
-//	} else {
-//		filesize = statbuff.st_size;
-//	}
-//	return filesize;
-//}
+
 
 #define XENOAMESS_RELEASE
 
@@ -46,7 +36,7 @@ char* INPUT_FINAL;
 char* OUTPUT_FINAL;
 
 size_t inputFileSize;
-size_t getFileSize(char *filename) {
+size_t getFileSize(const char *filename) {
 	FILE *fp = fopen(filename, "rb");
 	size_t res = _filelength(_fileno(fp));
 	fclose(fp);
@@ -57,13 +47,18 @@ unsigned char *fileContent;
 size_t fileContentIndex;
 
 struct BitWriter {
-	
+	FILE *outputFile;
 	unsigned char buffer;
 	unsigned char nowlen;
-	void init() {
-		//this->outputFile = outputFile;
+	unsigned char* writeTo;
+	size_t* writeToIndex;
+
+	void init(FILE* outputFile = NULL, unsigned char* writeTo = fileContent, size_t* writeToIndex = &fileContentIndex) {
+		this->outputFile = outputFile;
 		nowlen = 0;
 		buffer = 0;
+		this->writeTo = writeTo;
+		this->writeToIndex = writeToIndex;
 	}
 
 	void writeBit(unsigned char c) {
@@ -81,29 +76,38 @@ struct BitWriter {
 			writeBit(0);
 			writeBit(0);
 			len = 4;
-		} else if (num < (1 << 8)) {
+		}
+		else if (num < (1 << 8)) {
 			writeBit(0);
 			writeBit(1);
 			len = 8;
-		} else if (num < (1 << 16)) {
+		}
+		else if (num < (1 << 16)) {
 			writeBit(1);
 			writeBit(0);
 			len = 16;
-		} else {
+		}
+		else {
 			writeBit(1);
 			writeBit(1);
 			len = 32;
 		}
 		while (len--) {
-			writeBit((unsigned char) (num & 1));
+			writeBit((unsigned char)(num & 1));
 			num >>= 1;
 		}
 	}
 
 	void flush() {
 		buffer <<= (8 - nowlen);
-		fileContent[fileContentIndex++] = buffer;
-		//fwrite(&buffer, sizeof(unsigned char), 1, outputFile);
+
+		if (outputFile != NULL) {
+			fwrite(&buffer, sizeof(unsigned char), 1, outputFile);
+		}
+		else {
+			writeTo[(*writeToIndex)++] = buffer;
+		}
+
 		nowlen = 0;
 	}
 
@@ -113,10 +117,15 @@ struct BitReader {
 	FILE *inputFile;
 	unsigned char buffer;
 	unsigned char nowlen;
-	void init(FILE *inputFile) {
+	unsigned char* readFrom;
+	size_t* readFromIndex;
+
+	void init(FILE *inputFile = NULL, unsigned char* readFrom = fileContent, size_t* readFromIndex = &fileContentIndex) {
 		this->inputFile = inputFile;
 		nowlen = 0;
 		buffer = 0;
+		this->readFrom = readFrom;
+		this->readFromIndex = readFromIndex;
 	}
 
 	unsigned char readBit() {
@@ -139,11 +148,14 @@ struct BitReader {
 		size_t len;
 		if (l == 0) {
 			len = 4;
-		} else if (l == 1) {
+		}
+		else if (l == 1) {
 			len = 8;
-		} else if (l == 2) {
+		}
+		else if (l == 2) {
 			len = 16;
-		} else {
+		}
+		else {
 			len = 32;
 		}
 
@@ -164,12 +176,18 @@ struct BitReader {
 	}
 
 	void fetch() {
-		fread(&buffer, sizeof(unsigned char), 1, inputFile);
-		nowlen = 8;
+		if (inputFile != NULL) {
+			fread(&buffer, sizeof(buffer), 1, inputFile);
+		}
+		else {
+			buffer = readFrom[(*readFromIndex)++];
+		}
+		nowlen = (sizeof(buffer)<<3);
 	}
 
 } BIT_READER;
 
 #include"LZH.h"
 #include"BWT.h"
+#include"RE.h"
 #endif /* COMMON_H_ */

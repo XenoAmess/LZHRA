@@ -120,6 +120,7 @@
     <ClInclude Include="..\src\List.h" />
     <ClInclude Include="..\src\LZH.h" />
     <ClInclude Include="..\src\Map.h" />
+    <ClInclude Include="..\src\RE.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\LZHRA.cpp" />
