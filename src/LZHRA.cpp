@@ -2,10 +2,8 @@
 #include"Common.h"
 
 int main(int argc, char* argv[]) {
-	//LZH::compress("D:\\workspace\\LZHRA\\1.txt", "D:\\workspace\\LZHRA\\1.lzh");
-	//RE::compress("D:\\workspace\\LZHRA\\1.lzh", "D:\\workspace\\LZHRA\\1.lzhra");
-	RE::compress("D:\\workspace\\LZHRA\\1.txt", "D:\\workspace\\LZHRA\\1.re");
-	RE::compress_DE("D:\\workspace\\LZHRA\\1.re", "D:\\workspace\\LZHRA\\2.txt");
+	RE::compress("D:\\workspace\\LZHRA\\1.txt.bwt");
+
 	//LZH::compress("D:\\workspace\\LZHRA\\1.txt.bwt");
 	if (argc == 1) {
 		puts("help:");
