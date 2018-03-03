@@ -2,20 +2,30 @@
 #include"Common.h"
 
 int main(int argc, char* argv[]) {
-	RE::compress("D:\\workspace\\LZHRA\\1.txt.bwt");
+	//RE::compress("D:\\workspace\\LZHRA\\1.pdf", "D:\\workspace\\LZHRA\\6.re");
+	//RE::compress_DE("D:\\workspace\\LZHRA\\6.re", "D:\\workspace\\LZHRA\\2.pdf");
 
-	//LZH::compress("D:\\workspace\\LZHRA\\1.txt.bwt");
 	if (argc == 1) {
 		puts("help:");
 		puts("a FILENAME -> compress");
 		puts("e FILENAME -> extract");
 	} else if (argc == 3) {
+		char fileName[2000];
 		if (strcmp(argv[1], "a") == 0) {
-			LZH::compress(argv[2]);
-			//BWT::compress((std::string(argv[2]) + std::string(".lzh")).c_str());
-			//LZH::compress((std::string(argv[2]) + std::string(".lzh.bwt")).c_str());
+			sprintf(fileName, "%s.lzhra", argv[2]);
+			LZH::compress(argv[2],"lzhra.tmp");
+			RE::compress("lzhra.tmp", fileName);
+			remove("lzhra.tmp");
 		} else if (strcmp(argv[1], "e") == 0) {
-			LZH::compress_DE(argv[2]);
+			sprintf(fileName, "%s", argv[2]);
+			for (int i = strlen(fileName);;i--) {
+				if (fileName[i] == '.') {
+					fileName[i] = 0;
+					break;
+				}
+			}
+			RE::compress_DE(argv[2], "lzhra.tmp");
+			LZH::compress_DE("lzhra.tmp", fileName);
 		}
 	} else {
 		

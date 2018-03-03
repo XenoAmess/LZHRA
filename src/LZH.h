@@ -370,6 +370,7 @@ namespace LZH {
 
 	void compress(const char* inputFileName, const char* outputFileName = NULL) {
 
+
 		INPUT_FINAL = (char *)inputFileName;
 
 

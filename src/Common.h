@@ -19,6 +19,7 @@
 #include<map>
 #include<unordered_map>
 #include<vector>
+#include<deque>
 #include<algorithm>
 #include<string>
 #include"List.h"
